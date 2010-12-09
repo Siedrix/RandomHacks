@@ -5,7 +5,7 @@
 //Made for testing purpuse.
 //Eventually you would add a server side to conect to
 $array = array(
-	'action' => 'dance'
+	'action' => 'eventually you will have a server to dance with'
 );
 
 $json = json_encode($array);
