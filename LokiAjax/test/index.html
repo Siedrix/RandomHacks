@@ -1,0 +1,97 @@
+<html>
+<head>
+	<script type="text/javascript">
+	lokiDebbugStatus = {
+		server : 'active',
+		debbug : true
+	}
+	</script>
+	<script src="../jquery-1.4.4.min.js" type="text/javascript"></script>
+	<script src="../jquery.tmpl.min.js" type="text/javascript"></script>
+	<script src="../underscore-min.js" type="text/javascript"></script>
+	<script src="../lokiAjax.js" type="text/javascript"></script>
+
+	<script src="yui-min.js" type="text/javascript"></script>
+	<script type="text/javascript">
+	// Create new YUI instance, and populate it with the required modules
+	YUI().use('test', function(Y) {
+		var testInit = new Y.Test.Case({
+		 
+			name: "TestCase Init, code works",
+			setUp : function () {
+			},
+			tearDown : function () {
+			},		 
+			
+			testInit: function () {
+				var value = $.loki.console.getLogByType('init');
+				var result = new Array("Loki ready to rock");
+
+				Y.Assert.isArray(value, "Result Should be an array");
+				Y.ArrayAssert.itemsAreEqual(result, value, "Value shoud be [Loki is ready to rock]");
+			},
+		});
+		
+		var testLog = new Y.Test.Case({
+			name: "Testing logger",
+			setUp : function () {
+				$.loki.console.flush();
+			},
+			tearDown : function () {
+				$.loki.console.flush();
+			},
+			
+			testFlush: function(){
+				var value = $.loki.console.getLog();
+				var result = new Array();
+				
+				Y.Assert.isArray(value, "Result Should be an array");
+				Y.ArrayAssert.itemsAreEqual(result, value, "Value shoud be [Loki is ready to rock]");				
+			},
+			
+			testAdd: function(){
+				$.loki.console.log({type:'logTest',message:'First Log message'});
+			
+				var value = $.loki.console.getLog();
+				var result = new Array('logTest:First Log message');
+				
+				Y.Assert.isArray(value, "Result Should be an array");
+				Y.ArrayAssert.itemsAreEqual(result, value, "Value shoud be [logTest:First Log message]");								
+				
+				$.loki.console.log({type:'logTest',message:'Seconde Log message'});
+				
+				var value = $.loki.console.getLog();
+				result.push('logTest:Seconde Log message');
+				
+				Y.Assert.isArray(value, "Result Should be an array");
+				Y.ArrayAssert.itemsAreEqual(result, value, "Value shoud be [logTest:First Log message,logTest:Second Log message]");								
+			},
+			
+			testChannels: function(){
+				$.loki.console.log({type:'logTest',message:'First Log message'});
+				$.loki.console.log({type:'logTest',message:'Second Log message'});
+				$.loki.console.log({type:'channel',message:'First Channel message'});
+			
+				var value = $.loki.console.getLogByType('logTest');
+				var result = new Array('First Log message','Second Log message');
+				
+				Y.Assert.isArray(value, "Result Should be an array");
+				Y.ArrayAssert.itemsAreEqual(result, value, "Value shoud be [First Log message,Second Log message]");
+				
+				var value = $.loki.console.getLogByType('channel');
+				var result = new Array('First Channel message');
+				
+				Y.Assert.isArray(value, "Result Should be an array");
+				Y.ArrayAssert.itemsAreEqual(result, value, "Value shoud be [First Channel message]");
+			}
+		})
+		
+		Y.Test.Runner.add(testInit);
+		Y.Test.Runner.add(testLog);
+		Y.Test.Runner.run();
+	});
+	</script>
+</head>
+<body>
+</body>
+</html>
