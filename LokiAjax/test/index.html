@@ -24,8 +24,9 @@
 	</style> 
 	<script type="text/javascript">
 	lokiDebbugStatus = {
-		server : 'active',
-		debbug : true
+		server : 'not-active',
+		debbug : false,
+		root : 'http://localhost/RandomHacks/LokiAjax/'
 	}
 	</script>
 	<script src="../jquery-1.4.4.min.js" type="text/javascript"></script>
@@ -37,6 +38,7 @@
 	<script type="text/javascript">
 	// Create new YUI instance, and populate it with the required modules
 	YUI().use("node",'console','test', function(Y) {
+	
 		var testInit = new Y.Test.Case({
 		 
 			name: "TestCase Init, code works",
@@ -112,14 +114,83 @@
 		var testTemplateLoader = new Y.Test.Case({
 			name: "Testing Template Loader",			
 			setUp : function () {
-				
+				this.data = {
+					'debbug':false,
+					'data':'loki=true',
+					'type':'GET',
+					'template':'myTemplate',
+					'target':'body',
+					'url':'server/index.php',
+					'debbugUrl': 'json/test.php'
+				};
+				$.loki.console.flush();
 			},
 			tearDown : function () {
-				
+				$.loki.console.flush();
+				$('#renderTestValue, #renderTemplate').remove()
 			},
 			
 			testLoad: function(){
-				
+				var that = this;
+				$.loki.template.load(this.data.template,function(){
+					that.resume(function(){
+						that.template = "myTemplate";
+						var value = $.loki.template.loaded();
+						var result = new Array(that.template);
+						
+						Y.ArrayAssert.itemsAreEqual(result, value, "Value shoud be ["+that.template+"]");
+						
+						var value = $.loki.console.getLogByType('template-loading');
+						var result = new Array('Starting to load template '+that.template,'Finished to load template '+that.template);
+						
+						Y.ArrayAssert.itemsAreEqual(result, value, "Value shoud be [Start,Finish]");
+					});
+				});
+				this.wait();
+			},
+			
+			testRenderTemplate: function(){
+				var that = this;
+				$.loki.template.load(this.data.template,function(){
+					that.template = "myTemplate";
+					$('body').append('<div id="renderTemplate"></div>');
+					$.tmpl( that.template, {action:"Dance"} ).appendTo( '#renderTemplate' );
+					$('body').append('<div id="renderTestValue"></div>');
+					$("<ul><li>Dance</li></ul>").appendTo( '#renderTestValue' );
+					
+					that.resume(function(){
+						var value =  $('#renderTestValue ul li').html();
+						var result = $('#renderTemplate ul li').html();
+						
+						Y.Assert.areEqual(result,value,"Result should be [<ul><li>Dance</li></ul>]");
+					})
+				});
+				this.wait();
+			}
+		});
+		
+		var testLokiAjax = new Y.Test.Case({
+			name: "Loki Ajax Test",			
+			setUp : function () {},
+			tearDown : function () {},
+			
+			testLokiAjax: function(){
+				$('<div id="lokiAjax"></div>').appendTo('body');
+				$.loki.ajax({
+					'debbug':false,
+					'data':'loki=true',
+					'type':'GET',
+					'template':'myTemplate',
+					'target':'#lokiAjax',
+					'url':'server/index.php',
+					'debbugUrl': 'json/test.php'
+				});
+				this.wait(function(){
+					var value = 'eventually you will have a server to dance with';
+					var result = $('#lokiAjax').text().trim();
+					
+					Y.Assert.areEqual(result,value,"Result should be [eventually you will have a server to dance with]");
+				}, 1000); 
 			}
 		})
 		
@@ -133,6 +204,7 @@
 		Y.Test.Runner.add(testInit);
 		Y.Test.Runner.add(testLog);
 		Y.Test.Runner.add(testTemplateLoader);
+		Y.Test.Runner.add(testLokiAjax);
 		Y.Test.Runner.run();
 	});
 	</script>
