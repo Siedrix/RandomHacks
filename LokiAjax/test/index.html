@@ -127,7 +127,19 @@
 			},
 			tearDown : function () {
 				$.loki.console.flush();
+				$.loki.template.flush('myTemplate');
 				$('#renderTestValue, #renderTemplate').remove()
+			},
+			
+			testFlush : function(){
+				var that = this.data;
+				$.loki.template.load(this.data.template,function(){
+					var value = $.loki.template.isLoaded(that.template);
+					Y.Assert.areEqual(true, value, "Should be false");
+					$.loki.template.flush(that.template);
+					var value = $.loki.template.isLoaded(that.template);
+					Y.Assert.areEqual(false, value, "Should be false");
+				});
 			},
 			
 			testLoad: function(){
@@ -190,7 +202,7 @@
 					var result = $('#lokiAjax').text().trim();
 					
 					Y.Assert.areEqual(result,value,"Result should be [eventually you will have a server to dance with]");
-				}, 1000); 
+				}, 1000);
 			}
 		})
 		

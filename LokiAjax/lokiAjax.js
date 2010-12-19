@@ -1,6 +1,12 @@
 (function($){
 	// Our code here...
 	$.loki = {
+		_data:{
+		
+		},
+		init :{
+		
+		},
 		console : {
 			_messages : [],
 			log : function(data){
@@ -30,26 +36,32 @@
 		template : {
 			_templates : [],
 			load : function(template,callback){
-				that = this;
+				var that = this;
 				$.loki.console.log({type:'template-loading-init',message:'Starting to load template '+template});
 				$.ajax({
 					'url': lokiDebbugStatus.root + 'templates/' +template+ '.html',
 					'success': function(data){
 						$.loki.console.log({type:'template-loading-finish',message:'Finished to load template '+template});
-						that._templates.push(template);
+						$.loki.template.add(template);
 						$.template( template, data);
-						//$.tmpl( "myTmpl", {} ).appendTo( "body" );
 						callback(data);
 					}
 				})
 			},
+			add : function(template){
+				this._templates.push(template);
+			},
 			loaded : function(){
+				$.loki.console.log({type:'template-check-loaded',message:'Check for templates loaded'});
 				return this._templates;
 			},
-			flush : function(){
-				
+			flush : function(template){
+				delete $.template[template];
+				this._templates = _.select(this._templates, function(item){if(item!=template){return item}});
+				$.loki.console.log({type:'template-flushed',message:'Template '+template+' flushed'});
 			},
 			isLoaded : function(template){
+				$.loki.console.log({type:'template-check-loaded-single',message:'Check if template '+template+' is loaded'});
 				if($.template[template]){
 					return true;
 				}else{
@@ -61,8 +73,10 @@
 			ajaxOptions = {};
 			
 			if(lokiDebbugStatus.server != 'active'){
+				$.loki.console.log({type:"ajax-options",message:"Server is not Active"});
 				ajaxOptions.url = lokiDebbugStatus.root + options.debbugUrl;
 			}else{
+				$.loki.console.log({type:"ajax-options",message:"Server is Active"});
 				ajaxOptions.url = lokiDebbugStatus.root + options.url;
 			}
 			ajaxOptions.data = options.data;
@@ -70,21 +84,25 @@
 			ajaxOptions.type = options.type;
 
 			if(options.template){
+				$.loki.console.log({type:"ajax-options-template",message:"Ajax request with template "+options.template});
 				ajaxOptions.success = function(data){
 					$.tmpl( options.template, data ).appendTo( options.target );
 				}
 				
+				$.loki.console.log({type:"ajax-options-requesting",message:"Ajax request to "+ajaxOptions.url});
 				if($.loki.template.isLoaded(options.template)){
 					$.ajax(ajaxOptions);
 				}else{
-					$.loadTemplate(options.template,function(){
+					$.loki.template.load(options.template,function(){
 						$.ajax(ajaxOptions);
 					});
 				}
 			}else{
+				$.loki.console.log({type:"ajax-options-template",message:"Ajax request with no template"});
 				$.ajax(ajaxOptions);
 			}			
 		}
+		
 	}
 	
 	$.loki.console.log({type:'init',message:'Loki ready to rock'});
