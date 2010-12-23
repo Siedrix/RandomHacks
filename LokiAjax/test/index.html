@@ -22,16 +22,18 @@
 			color: #fff;
 		}
 	</style> 
-	<script type="text/javascript">
-	lokiDebbugStatus = {
-		server : 'not-active',
-		debbug : false,
-		root : 'http://localhost/RandomHacks/LokiAjax/'
-	}
-	</script>
 	<script src="../jquery-1.4.4.min.js" type="text/javascript"></script>
 	<script src="../jquery.tmpl.min.js" type="text/javascript"></script>
 	<script src="../underscore-min.js" type="text/javascript"></script>
+	<script type="text/javascript">
+	$(document).ready(function(){
+		$.loki.init({
+			server:"not-active",
+			debbug : false,
+			root : 'http://localhost/RandomHacks/LokiAjax/'
+		});
+	});
+	</script>
 	<script src="../lokiAjax.js" type="text/javascript"></script>
 
 	<script src="../yui/build/yui/yui-min.js" type="text/javascript"></script>
@@ -48,11 +50,16 @@
 			},		 
 			
 			testInit: function () {
-				var value = $.loki.console.getLogByType('init');
-				var result = new Array("Loki ready to rock");
+				var data = $.loki._data;
 
+				Y.Assert.areEqual(data.server, 'not-active', "Result Should be 'not-active'");
+				Y.Assert.areEqual(data.root, 'http://localhost/RandomHacks/LokiAjax/', "Result Should be 'http://localhost/RandomHacks/LokiAjax/'");			
+			
+				var value = $.loki.console.getLogByType('init');
+				var result = new Array("Inicialized");
+				
 				Y.Assert.isArray(value, "Result Should be an array");
-				Y.ArrayAssert.itemsAreEqual(result, value, "Value shoud be [Loki is ready to rock]");
+				Y.ArrayAssert.itemsAreEqual(result, value, "Value shoud be [Inicialized]");
 			},
 		});
 		

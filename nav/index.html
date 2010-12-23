@@ -12,10 +12,78 @@ body{
 	width:220px;
 	height:1000px;
 	-moz-box-shadow: 3px 0 10px #0c2861;
+	position:fixed;
+}
+#main{
+	position:fixed;
+	top:10px;
+	left:310px;
 }
 </style>
+	<script src="../LokiAjax/jquery-1.4.4.min.js" type="text/javascript"></script>
+	<script src="../LokiAjax/jquery.tmpl.min.js" type="text/javascript"></script>
+	<script src="../LokiAjax/underscore-min.js" type="text/javascript"></script>
+	<script src="../LokiAjax/lokiAjax.js" type="text/javascript"></script>
+
+	<script src="sammy.js" type="text/javascript"></script>
+	<script type="text/javascript">
+	$(document).ready(function(){
+		$.loki.init({
+			server:"not-active",
+			debbug : false,
+			root : 'http://localhost/RandomHacks/nav/'
+		});
+	});
+	</script>
 </head>
 <body>
-	<div id="nav"></div>
+	<div id="nav">
+		<ul>
+			<li id="console">Console Documentation</li>
+			<li id="template">Template Documentation</li>
+			<li id="ajax">Ajax Documentation</li>
+		</ul>
+	</div>
+	<div id="main"></div>
+	<script type="text/javascript">
+	$(document).ready(function(){
+		//sammy
+		var app = $.sammy('#main', function() {
+			this.get('#/documentation/:module', function(context) {
+				$.loki.ajax({
+					'template':'Main',
+					'target':'#main',
+					'url':'server/index.php',
+					'debbugUrl': 'json/'+this.params['module']+'.php'
+				});
+			});			
+
+		});
+
+		$(function() {
+			app.run('#/');
+		});
+	
+		//buttons
+		$('#console').click(function(){
+			location.hash = "#/documentation/console";
+		});
+		$('#template').click(function(){
+			location.hash = "#/documentation/template";
+		});		
+		$('#ajax').click(function(){
+			location.hash = "#/documentation/ajax";
+		});		
+		
+		//ajax loads
+		$('#main').ajaxSend(function(data){
+			$(this).html('');
+			$(this).html('<p id="loading">Loading</p>');
+		})
+		$('#main').ajaxComplete(function(){
+			$('#loading').remove();
+		})
+	});
+	</script>
 </body>
 </html>
