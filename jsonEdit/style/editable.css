@@ -1,0 +1,26 @@
+.editable{
+	border:1px solid #000;
+	position:relative;
+	padding:10px;
+}
+.new-edit-button, .save-edit-button, .start-editing{
+	position:absolute;
+	right:10px;
+	padding:5px;
+	color:#FFF;
+	background:#000;
+	width:100px;
+}
+.value-field{
+	margin:10px 0;
+}
+.start-editing{
+	display:none;
+	top:10px;
+}
+.new-edit-button{
+	bottom:50px;
+}
+.save-edit-button{
+	bottom:10px;
+}

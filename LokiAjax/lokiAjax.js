@@ -3,8 +3,8 @@
 	$.loki = {
 		_data:{},
 		init : function(data){
-			$.loki.console.log({type:"init",message:"Inicialized"});
 			this._data = data;
+			$.loki.console.log({type:"init",message:"Inicialized"});
 		},
 		console : {
 			_messages : [],

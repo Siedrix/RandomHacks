@@ -1,0 +1,46 @@
+<html>
+<head>
+	<title>Loki jsonEdit</title>
+	
+	<link type="text/css" rel="stylesheet" href="style/editable.css" />
+	
+	<script src="js/jquery-1.4.4.min.js" type="text/javascript"></script>
+	<script src="js/jquery.tmpl.min.js" type="text/javascript"></script>
+	<script src="js/underscore-min.js" type="text/javascript"></script>
+	<script src="json-edit.js" type="text/javascript"></script>
+	<script type="text/javascript">
+	$(document).ready(function(){
+		var json = {
+			title : "Title",
+			content : "This is the content"
+		}
+		
+		//Create template information, should change to autoload in merge with lokiajax
+		$.template( "display", $('#display').html() );
+		
+		//Init json display to be part of jsonEdit
+		$("#json-display").inicialize(json, "display").renderDisplay().setAsEditable();
+		
+		//debbug interactions
+		$("#json-display .start-editing").click();
+		$("#json-display #title").val('lol');
+		$("#json-display #content").val('did it for the lolz');
+		$("#json-display .new-edit-button").click();
+		$("#json-display #lable").val('dance');
+		$("#json-display #value").val('like a robot');
+		$("#json-display .save-edit-button").click();
+	});
+	</script>
+</head>
+</body>
+	<h2>Loki Edit/Render json script</h2>
+	<div id="json-display"></div>
+	<div id="json-edit"></div>
+	
+	<script id="display" type="text/x-jquery-tmpl">
+		<h2>${title}</h2>
+		<div>${content}</div>
+		<div>${dance}</div>
+	</script>
+<body>
+</html>
